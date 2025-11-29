@@ -3,7 +3,7 @@
 @section('content')
 <h3>Tambah Siswa Baru</h3>
 <div class="card p-4">
-<form method="POST" action="{{ route('admin.students.store') }}">@csrf
+<form method="POST" action="{{ route('admin.students.store') }}" enctype="multipart/form-data">@csrf
   <div class="mb-3">
     <label class="form-label">NIS</label>
     <input name="nis" class="form-control @error('nis') is-invalid @enderror" value="{{ old('nis') }}" required>
@@ -23,6 +23,19 @@
       @endforeach
     </select>
     @error('kelas_id')<div class="invalid-feedback">{{ $message }}</div>@enderror
+  </div>
+  <div class="mb-3">
+    <label class="form-label">Email (opsional)</label>
+    <input type="email" name="email" class="form-control @error('email') is-invalid @enderror" value="{{ old('email') }}">
+    @error('email')<div class="invalid-feedback">{{ $message }}</div>@enderror
+  </div>
+  <div class="mb-3">
+    <label class="form-label">Password (opsional)</label>
+    <input type="text" name="password" class="form-control" value="{{ old('password') }}" placeholder="Kosongkan untuk default 'password'">
+  </div>
+  <div class="mb-3">
+    <label class="form-label">Foto Siswa (opsional)</label>
+    <input type="file" name="photo" accept="image/*" class="form-control">
   </div>
   <button type="submit" class="btn btn-primary">Simpan</button>
   <a href="{{ route('admin.students.index') }}" class="btn btn-secondary">Batal</a>

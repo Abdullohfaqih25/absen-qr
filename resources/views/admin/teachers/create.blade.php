@@ -14,6 +14,10 @@
       <input type="email" name="email" class="form-control" value="{{ old('email') }}">
     </div>
     <div class="mb-3">
+      <label class="form-label">Password (opsional)</label>
+      <input type="text" name="password" class="form-control" value="{{ old('password') }}" placeholder="Kosongkan untuk default 'password'">
+    </div>
+    <div class="mb-3">
       <label class="form-label">NIP</label>
       <input type="text" name="nip" class="form-control" value="{{ old('nip') }}">
     </div>

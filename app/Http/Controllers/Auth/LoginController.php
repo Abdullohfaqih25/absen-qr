@@ -22,7 +22,33 @@ class LoginController extends Controller
 
         if (Auth::attempt($credentials, $request->boolean('remember'))) {
             $request->session()->regenerate();
-            return $this->authenticated($request, Auth::user());
+
+            // Role selector protection: ensure selector matches user role.
+            // Additionally, require Admin users to login via the admin area (/admin).
+            $selectedRole = $request->input('selected_role');
+            $user = Auth::user();
+
+            if ($user->isAdmin()) {
+                if ($selectedRole) {
+                    // Admin must login via /admin, reject attempts from the public selector form
+                    Auth::logout();
+                    return back()->withErrors(['email' => 'Silakan masuk lewat /admin untuk akun administrator.'])->onlyInput('email');
+                }
+                // no selected role -> allow admin login (e.g., direct admin login form)
+            } else {
+                if ($selectedRole) {
+                    if ($selectedRole === 'guru' && ! $user->isGuru()) {
+                        Auth::logout();
+                        return back()->withErrors(['email' => 'Akun ini bukan akun Guru.'])->onlyInput('email');
+                    }
+                    if ($selectedRole === 'siswa' && ! $user->isSiswa()) {
+                        Auth::logout();
+                        return back()->withErrors(['email' => 'Akun ini bukan akun Siswa.'])->onlyInput('email');
+                    }
+                }
+            }
+
+            return $this->authenticated($request, $user);
         }
 
         return back()->withErrors([
@@ -43,9 +69,9 @@ class LoginController extends Controller
         if ($user->isAdmin()) {
             return redirect()->route('admin.dashboard');
         } elseif ($user->isGuru()) {
-            return redirect()->route('guru.qr.show');
+            return redirect()->route('guru.dashboard');
         } else {
-            return redirect()->route('siswa.scan');
+            return redirect()->route('siswa.dashboard');
         }
     }
 }

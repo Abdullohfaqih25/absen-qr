@@ -88,7 +88,7 @@ cp .env.example .env
 php artisan key:generate
 
 # 2. Configure database (.env)
-DB_DATABASE=absenqr
+DB_DATABASE=absen_qr
 DB_USERNAME=root
 DB_PASSWORD=
 

@@ -17,10 +17,17 @@ class TeacherController extends Controller{
     }
     
     public function store(Request $r){ 
-        $v=$r->validate(['name'=>'required', 'email'=>'nullable|email|unique:users,email', 'nip'=>'nullable|unique:teachers,nip']); 
-        $t=Teacher::create($v); 
+        $v=$r->validate([
+            'name'=>'required',
+            'email'=>'nullable|email|unique:users,email',
+            'nip'=>'nullable|unique:teachers,nip',
+            'password'=>'nullable|string|min:6'
+        ]);
+
+        $t=Teacher::create(['name'=>$v['name'],'email'=>$v['email'] ?? null,'nip'=>$v['nip'] ?? null]); 
         $email = $v['email'] ?? strtolower(str_replace(' ','',$t->name)) . '@guru.absenqr.local';
-        User::create(['name'=>$t->name,'email'=>$email,'password'=>bcrypt('password'),'role'=>'guru','related_id'=>$t->id]); 
+        $password = isset($v['password']) && $v['password'] ? bcrypt($v['password']) : bcrypt('password');
+        User::create(['name'=>$t->name,'email'=>$email,'password'=>$password,'role'=>'guru','related_id'=>$t->id]); 
         return redirect()->route('admin.teachers.index')->with('success','Guru ditambahkan'); 
     }
     

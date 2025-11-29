@@ -24,10 +24,32 @@ class StudentController extends Controller
     }
 
     public function store(Request $request){
-        $v = $request->validate([ 'nis'=>'required|unique:students,nis', 'name'=>'required', 'kelas_id'=>'required|exists:kelas,id' ]);
-        $student = Student::create($v);
-        $email = strtolower($student->nis) . '@student.absenqr.local';
-        User::create(['name'=>$student->name,'email'=>$email,'password'=>bcrypt('password'),'role'=>'siswa','related_id'=>$student->id]);
+        $v = $request->validate([
+            'nis'=>'required|unique:students,nis',
+            'name'=>'required',
+            'kelas_id'=>'required|exists:kelas,id',
+            'email'=>'nullable|email|unique:users,email',
+            'password'=>'nullable|string|min:6',
+            'photo'=>'nullable|image|max:2048'
+        ]);
+
+        $studentData = [
+            'nis' => $v['nis'],
+            'name' => $v['name'],
+            'kelas_id' => $v['kelas_id']
+        ];
+
+        if ($request->hasFile('photo')) {
+            $path = $request->file('photo')->store('students','public');
+            $studentData['photo'] = $path;
+        }
+
+        $student = Student::create($studentData);
+
+        $email = $v['email'] ?? strtolower($student->nis) . '@student.absenqr.local';
+        $password = isset($v['password']) && $v['password'] ? bcrypt($v['password']) : bcrypt('password');
+
+        User::create(['name'=>$student->name,'email'=>$email,'password'=>$password,'role'=>'siswa','related_id'=>$student->id]);
         return redirect()->route('admin.students.index')->with('success','Siswa ditambahkan');
     }
 
