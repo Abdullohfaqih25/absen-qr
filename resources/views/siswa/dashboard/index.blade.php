@@ -152,6 +152,47 @@
   </div>
 </div>
 
+<!-- Weekly Schedule -->
+<div class="row mt-4">
+  <div class="col-12">
+    <div class="card border-0">
+      <div class="card-body">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+          <h6 class="fw-semibold mb-0"><i class="fas fa-calendar-week text-primary me-2"></i>Jadwal Mingguan (Minggu {{ \Carbon\Carbon::now()->weekOfYear % 2 ? 1 : 2 }})</h6>
+          <div class="small text-muted">Kelas: {{ $student->kelas?->name ?? '-' }}</div>
+        </div>
+
+        <div class="row">
+          @php
+            $weekDays = ['Monday','Tuesday','Wednesday','Thursday','Friday'];
+          @endphp
+          @foreach($weekDays as $wd)
+            <div class="col-md-6 col-lg-4 mb-3">
+              <div class="card h-100">
+                <div class="card-header fw-bold">{{ \Carbon\Carbon::parse($wd)->isoFormat('dddd') }}</div>
+                <div class="card-body p-3">
+                  @if(isset($weekSchedules[$wd]) && count($weekSchedules[$wd]))
+                    @foreach($weekSchedules[$wd] as $slot)
+                      <div class="mb-2">
+                        <div class="small text-muted">{{ $slot->start_time }} - {{ $slot->end_time }}</div>
+                        <div class="fw-semibold">{{ $slot->subject ?? '-' }}</div>
+                        <div class="small text-muted">{{ $slot->teacher ?? '-' }}</div>
+                      </div>
+                    @endforeach
+                  @else
+                    <div class="text-muted small">Tidak ada jadwal</div>
+                  @endif
+                </div>
+              </div>
+            </div>
+          @endforeach
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+</div>
+
 <style>
 .dashboard-header h2 {
   color: #1e293b;

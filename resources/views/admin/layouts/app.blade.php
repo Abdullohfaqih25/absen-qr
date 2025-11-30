@@ -277,6 +277,16 @@
           </a>
         </li>
         <li class="nav-item">
+          <a class="nav-link {{ Request::is('admin/day-templates*') ? 'active' : '' }}" href="{{ route('admin.day-templates.index') }}">
+            <i class="fa fa-clock"></i>Day
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link {{ Request::is('admin/week-templates*') ? 'active' : '' }}" href="{{ route('admin.week-templates.index') }}">
+            <i class="fa fa-calendar-alt"></i>Week
+          </a>
+        </li>
+        <li class="nav-item">
           <a class="nav-link {{ Request::is('admin/attendances*') ? 'active' : '' }}" href="{{ route('admin.attendances.index') }}">
             <i class="fa fa-clipboard-list"></i>Absensi
           </a>
