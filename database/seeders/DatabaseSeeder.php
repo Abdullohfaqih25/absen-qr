@@ -76,6 +76,10 @@ class DatabaseSeeder extends Seeder
                 'teacher_id'=>$t->id
             ]);
         }
+
+        // Mapel & schedules
+        $this->call(\Database\Seeders\MapelSeeder::class);
+        $this->call(\Database\Seeders\ScheduleSeeder::class);
     }
 }
 

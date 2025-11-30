@@ -7,7 +7,8 @@ use App\Models\Kelas;
 
 class KelasController extends Controller{
     public function index(){ 
-        $kelas = Kelas::paginate(25); 
+        // Use withCount to get accurate student counts efficiently
+        $kelas = Kelas::withCount('students')->paginate(25); 
         return view('admin.kelas.index', compact('kelas')); 
     }
     
@@ -16,7 +17,7 @@ class KelasController extends Controller{
     }
     
     public function store(Request $r){ 
-        $v=$r->validate(['name'=>'required','room'=>'nullable']); 
+        $v=$r->validate(['name'=>'required','room'=>'nullable','capacity'=>'nullable|integer|min:0']); 
         Kelas::create($v); 
         return redirect()->route('admin.kelas.index')->with('success','Kelas ditambahkan'); 
     }
@@ -26,7 +27,7 @@ class KelasController extends Controller{
     }
     
     public function update(Request $r, Kelas $kela){ 
-        $v=$r->validate(['name'=>'required','room'=>'nullable']); 
+        $v=$r->validate(['name'=>'required','room'=>'nullable','capacity'=>'nullable|integer|min:0']); 
         $kela->update($v); 
         return redirect()->route('admin.kelas.index')->with('success','Diupdate'); 
     }

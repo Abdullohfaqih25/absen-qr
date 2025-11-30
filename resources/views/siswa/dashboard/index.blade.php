@@ -99,9 +99,10 @@
             <h6 class="fw-semibold mb-0">
               <i class="fas fa-calendar-day text-info me-2"></i>Jadwal Pelajaran Hari Ini
             </h6>
-            <span class="badge bg-info-subtle text-info">
-              {{ \Carbon\Carbon::now()->isoFormat('dddd, D MMMM YYYY') }}
-            </span>
+            <div class="d-flex align-items-center gap-2">
+              <span class="badge bg-info-subtle text-info">{{ \Carbon\Carbon::now()->isoFormat('dddd, D MMMM YYYY') }}</span>
+              <a href="{{ route('siswa.jadwal.index') }}" class="btn btn-sm btn-outline-primary">Lihat Jadwal</a>
+            </div>
           </div>
         </div>
 

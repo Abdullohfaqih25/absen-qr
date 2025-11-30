@@ -14,6 +14,10 @@
       <label class="form-label">Ruangan</label>
       <input type="text" name="room" class="form-control" value="{{ $kela->room }}">
     </div>
+    <div class="mb-3">
+      <label class="form-label">Jumlah Murid</label>
+      <input type="number" name="capacity" class="form-control" min="0" value="{{ old('capacity', $kela->capacity) }}">
+    </div>
     <button type="submit" class="btn btn-primary">Update</button>
     <a href="{{ route('admin.kelas.index') }}" class="btn btn-secondary">Batal</a>
   </form>

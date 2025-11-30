@@ -26,8 +26,12 @@
     </div>
     <div class="mb-3">
       <label class="form-label">Mata Pelajaran</label>
-      <input type="text" name="subject" class="form-control @error('subject') is-invalid @enderror" value="{{ old('subject',$schedule->subject) }}" required>
-      @error('subject')<div class="invalid-feedback">{{ $message }}</div>@enderror
+      <select name="mapel_id" class="form-control">
+        <option value="">-- Pilih Mapel --</option>
+        @foreach($mapels as $m)
+          <option value="{{ $m->id }}" {{ $schedule->mapel_id == $m->id ? 'selected' : '' }}>{{ $m->name }}</option>
+        @endforeach
+      </select>
     </div>
     <div class="row">
       <div class="col-md-6 mb-3">
@@ -39,7 +43,6 @@
           <option value="Wednesday" {{ $schedule->day == 'Wednesday' ? 'selected' : '' }}>Rabu</option>
           <option value="Thursday" {{ $schedule->day == 'Thursday' ? 'selected' : '' }}>Kamis</option>
           <option value="Friday" {{ $schedule->day == 'Friday' ? 'selected' : '' }}>Jumat</option>
-          <option value="Saturday" {{ $schedule->day == 'Saturday' ? 'selected' : '' }}>Sabtu</option>
         </select>
         @error('day')<div class="invalid-feedback">{{ $message }}</div>@enderror
       </div>
@@ -53,6 +56,17 @@
         <input type="time" name="end_time" class="form-control @error('end_time') is-invalid @enderror" value="{{ old('end_time',$schedule->end_time) }}" required>
         @error('end_time')<div class="invalid-feedback">{{ $message }}</div>@enderror
       </div>
+    </div>
+    <div class="mb-3">
+      <label class="form-label">Minggu</label>
+      <select name="week_type" class="form-control">
+        <option value="1" {{ $schedule->week_type==1 ? 'selected' : '' }}>Minggu 1 (Kejuruan)</option>
+        <option value="2" {{ $schedule->week_type==2 ? 'selected' : '' }}>Minggu 2 (Umum)</option>
+      </select>
+    </div>
+    <div class="mb-3">
+      <label class="form-label">Materi / Topik (opsional)</label>
+      <textarea name="topic" class="form-control">{{ old('topic',$schedule->topic) }}</textarea>
     </div>
     <button type="submit" class="btn btn-primary">Update</button>
     <a href="{{ route('admin.schedules.index') }}" class="btn btn-secondary">Batal</a>

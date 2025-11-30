@@ -267,6 +267,11 @@
           </a>
         </li>
         <li class="nav-item">
+          <a class="nav-link {{ Request::is('admin/mapels*') ? 'active' : '' }}" href="{{ route('admin.mapels.index') }}">
+            <i class="fa fa-book"></i>Mapel
+          </a>
+        </li>
+        <li class="nav-item">
           <a class="nav-link {{ Request::is('admin/schedules*') ? 'active' : '' }}" href="{{ route('admin.schedules.index') }}">
             <i class="fa fa-calendar"></i>Jadwal
           </a>

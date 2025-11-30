@@ -7,6 +7,6 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 class Kelas extends Model
 {
     use HasFactory;
-    protected $fillable = ['name','room'];
+    protected $fillable = ['name','room','capacity'];
     public function students(){ return $this->hasMany(Student::class); }
 }

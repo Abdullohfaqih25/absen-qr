@@ -7,6 +7,7 @@ use App\Http\Controllers\Admin\StudentController;
 use App\Http\Controllers\Admin\TeacherController;
 use App\Http\Controllers\Admin\KelasController;
 use App\Http\Controllers\Admin\ScheduleController;
+use App\Http\Controllers\Admin\MapelController;
 use App\Http\Controllers\Admin\AttendanceController;
 use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Auth\LoginController;
@@ -46,6 +47,7 @@ Route::middleware(['auth','role:siswa','nocache'])->prefix('siswa')->name('siswa
     Route::get('dashboard', [SiswaDashboardController::class,'index'])->name('dashboard');
     Route::get('scan', [ScanController::class,'scanPage'])->name('scan');
     Route::post('scan', [ScanController::class,'store'])->name('scan.store');
+    Route::get('jadwal', [\App\Http\Controllers\Siswa\ScheduleController::class,'index'])->name('jadwal.index');
 });
 
 // Guru
@@ -63,6 +65,7 @@ Route::prefix('admin')->middleware(['auth','role:admin','nocache'])->name('admin
     Route::resource('teachers', TeacherController::class);
     Route::resource('kelas', KelasController::class);
     Route::resource('schedules', ScheduleController::class);
+    Route::resource('mapels', MapelController::class);
     Route::get('attendances/export', [AttendanceController::class,'export'])->name('attendances.export');
     Route::get('attendances', [AttendanceController::class,'index'])->name('attendances.index');
 });
