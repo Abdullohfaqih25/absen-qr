@@ -6,6 +6,8 @@ use Illuminate\Http\Request;
 use App\Models\QrToken;
 use Carbon\Carbon;
 use App\Models\Attendance;
+use App\Models\Schedule;
+use App\Models\WeekTemplate;
 
 class QRController extends Controller
 {
@@ -25,7 +27,12 @@ class QRController extends Controller
     }
 
     public function realtimeList(){
-        $attendances = Attendance::whereDate('absent_at', Carbon::today())->with('student.kelas')->get();
+        $teacherId = auth()->user()->related_id;
+        $attendances = Attendance::whereDate('absent_at', Carbon::today())
+            ->where('teacher_id', $teacherId)
+            ->with('student.kelas')
+            ->get();
+
         return view('guru.qr.realtime', compact('attendances'));
     }
 }

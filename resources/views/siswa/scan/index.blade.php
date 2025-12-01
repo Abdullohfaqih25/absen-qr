@@ -24,30 +24,46 @@
 @push('scripts')
 <script src="https://unpkg.com/html5-qrcode@2.3.7/minified/html5-qrcode.min.js"></script>
 <script>
-  const html5QrCode = new Html5Qrcode("reader");
+  let html5QrCode = null;
   function startScanner(){
-    Html5Qrcode.getCameras().then(cameras => {
-      if(cameras && cameras.length){
-        const cameraId = cameras[0].id;
-        html5QrCode.start(cameraId, { fps: 10, qrbox: 250 }, qrCodeMessage => {
-          try{
-            const data = JSON.parse(qrCodeMessage);
-            sendScan(data.nis, data.token);
-          }catch(e){
-            $('#tokenInput').val(qrCodeMessage);
-          }
-        }, err => {})
-        .catch(err=>console.error(err));
-      }
-    }).catch(err=>console.error(err));
-  }
-  $(document).ready(()=>{
-    startScanner();
-    function sendScan(nis, token){
-      $.post("{{ route('siswa.scan.store') }}", {_token:'{{ csrf_token() }}', nis:nis, token:token, device:navigator.userAgent})
-      .done(res=>{ Swal.fire('Berhasil','Absensi tersimpan','success'); html5QrCode.stop(); })
-      .fail(err=>{ Swal.fire('Gagal', err.responseJSON?.error || err.responseText, 'error'); });
+    try{
+      if(typeof Html5Qrcode === 'undefined') throw new Error('Html5Qrcode lib not loaded');
+      html5QrCode = new Html5Qrcode("reader");
+      Html5Qrcode.getCameras().then(cameras => {
+        if(cameras && cameras.length){
+          const cameraId = cameras[0].id;
+          html5QrCode.start(cameraId, { fps: 10, qrbox: 250 }, qrCodeMessage => {
+            try{
+              const data = JSON.parse(qrCodeMessage);
+              sendScan(data.nis, data.token);
+            }catch(e){
+              $('#tokenInput').val(qrCodeMessage);
+            }
+          }, err => {})
+          .catch(err=>console.error(err));
+        }
+      }).catch(err=>console.error(err));
+    }catch(err){
+      console.warn('Scanner not available:', err.message);
+      $('#reader').html('<div class="p-3 text-center text-muted">Scanner tidak tersedia — gunakan input manual.</div>');
     }
+  }
+
+  $(document).ready(()=>{
+    // Ensure sendScan is available even if scanner fails
+    function sendScan(nis, token){
+      if(!nis || !token){
+        Swal.fire('Perhatian','Isi NIS dan Token terlebih dahulu','warning');
+        return;
+      }
+      $.post("{{ route('siswa.scan.store') }}", {_token:'{{ csrf_token() }}', nis:nis, token:token, device:navigator.userAgent})
+      .done(res=>{ Swal.fire('Berhasil','Absensi tersimpan','success'); if(html5QrCode) html5QrCode.stop(); })
+      .fail(err=>{ Swal.fire('Gagal', err.responseJSON?.error || err.responseText || 'Terjadi kesalahan', 'error'); });
+    }
+
+    // Start scanner (if library available)
+    startScanner();
+
     $('#manualForm').on('submit', function(e){ e.preventDefault(); sendScan($('#nisInput').val(), $('#tokenInput').val()); });
   });
 </script>

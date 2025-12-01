@@ -632,22 +632,6 @@
                 </button>
             </form>
 
-            <!-- Demo Credentials -->
-            <div class="demo-credentials">
-                <h6><i class="fas fa-info-circle"></i> Demo Login</h6>
-                <div class="demo-item demo-admin">
-                    <strong>Admin:</strong>
-                    <span>admin@sekolah.test / password</span>
-                </div>
-                <div class="demo-item demo-guru" style="display:none;">
-                    <strong>Guru:</strong>
-                    <span>budisantoso@guru.absenqr.local / password</span>
-                </div>
-                <div class="demo-item demo-siswa">
-                    <strong>Siswa:</strong>
-                    <span>2025{NIS}@student.absenqr.local / password</span>
-                </div>
-            </div>
 
             <!-- Admin Link -->
             <div class="admin-link">

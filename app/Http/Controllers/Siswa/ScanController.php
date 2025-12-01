@@ -29,6 +29,7 @@ class ScanController extends Controller
 
         $att = Attendance::create([
             'student_id'=>$student->id,
+            'teacher_id'=>$q->teacher_id,
             'absent_at'=>$time,
             'status'=>$status,
             'device'=>$request->device ?? $request->header('User-Agent'),

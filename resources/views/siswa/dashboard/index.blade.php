@@ -130,7 +130,7 @@
                       </div>
                       <div class="d-flex align-items-center gap-2 text-muted small">
                         <i class="fas fa-chalkboard-teacher"></i>
-                        <span>{{ $sch->teacher->name ?? 'Guru tidak tersedia' }}</span>
+                        <span>{{ $sch->teacher_name ?? ($sch->teacher->name ?? 'Guru tidak tersedia') }}</span>
                       </div>
                     </div>
                   </div>

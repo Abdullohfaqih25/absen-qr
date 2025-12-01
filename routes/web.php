@@ -58,6 +58,7 @@ Route::middleware(['auth','role:guru','nocache'])->prefix('guru')->name('guru.')
     Route::get('qr', [QRController::class,'showToday'])->name('qr.show');
     Route::post('qr/regenerate', [QRController::class,'regenerate'])->name('qr.regenerate');
     Route::get('realtime', [QRController::class,'realtimeList'])->name('qr.realtime');
+    Route::post('availability/toggle', [\App\Http\Controllers\Guru\AvailabilityController::class,'toggle'])->name('availability.toggle');
 });
 
 // Admin

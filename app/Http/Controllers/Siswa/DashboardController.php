@@ -18,9 +18,8 @@ class DashboardController extends Controller
         $totalPresent = Attendance::where('student_id', $studentId)->count();
         $last = Attendance::where('student_id', $studentId)->latest('absent_at')->first();
         $student = Student::with('kelas')->find($studentId);
-        $todayIndex = Carbon::now()->dayOfWeek; // 0 (Sun) - 6 (Sat)
-        $days = ['Minggu','Senin','Selasa','Rabu','Kamis','Jumat','Sabtu'];
-        $todayName = $days[$todayIndex];
+        // Use English day name (e.g. Monday) to match seeded schedule/week template values
+        $todayName = Carbon::now()->format('l');
         $todaySchedules = [];
         $weekSchedules = [];
         $currentWeekType = (Carbon::now()->weekOfYear % 2) ? 1 : 2;
@@ -53,12 +52,46 @@ class DashboardController extends Controller
 
                 // set today's schedules from template if available
                 $todaySchedules = $weekSchedules[Carbon::now()->format('l')] ?? collect();
+
+                // fetch today's teacher availabilities for involved teachers
+                $teacherIds = collect($todaySchedules)->pluck('teacher')->filter()->unique();
+                $availMap = [];
+                if($teacherIds->count()){
+                    $rows = \App\Models\TeacherAvailability::whereIn('teacher_id',$teacherIds->toArray())->where('date', Carbon::today()->toDateString())->get();
+                    foreach($rows as $r) $availMap[$r->teacher_id] = $r->is_absent;
+                }
+                // attach availability flag
+                $todaySchedules = collect($todaySchedules)->map(function($s) use ($availMap){
+                    $teacherName = $s->teacher ?? null;
+                    $teacherId = null;
+                    if(isset($s->teacher) && is_object($s->teacher) && isset($s->teacher->id)){
+                        $teacherId = $s->teacher->id;
+                        $teacherName = $s->teacher->name;
+                    }
+                    if(isset($s->teacher_id)) $teacherId = $s->teacher_id;
+                    $isAbsent = $teacherId ? ($availMap[$teacherId] ?? false) : false;
+                    return (object) array_merge((array)$s, ['teacher_name'=>$isAbsent ? null : $teacherName, 'teacher_is_absent'=>$isAbsent]);
+                });
             } else {
                 // Fallback to schedules table
-                $todaySchedules = Schedule::where('kelas_id', $student->kelas_id)
+                $todaySchedules = Schedule::with(['teacher','mapel'])
+                    ->where('kelas_id', $student->kelas_id)
                     ->whereRaw('LOWER(day) = ?', [strtolower($todayName)])
                     ->orderBy('start_time')
                     ->get();
+
+                // get teacher availabilities for today
+                $teacherIds = $todaySchedules->pluck('teacher_id')->filter()->unique()->toArray();
+                $rows = \App\Models\TeacherAvailability::whereIn('teacher_id',$teacherIds)->where('date', Carbon::today()->toDateString())->get();
+                $availMap = [];
+                foreach($rows as $r) $availMap[$r->teacher_id] = $r->is_absent;
+                // attach flags
+                $todaySchedules = $todaySchedules->map(function($s) use ($availMap){
+                    $isAbsent = $s->teacher_id ? ($availMap[$s->teacher_id] ?? false) : false;
+                    $s->teacher_name = $isAbsent ? null : ($s->teacher?->name ?? null);
+                    $s->teacher_is_absent = $isAbsent;
+                    return $s;
+                });
 
                 // build weekSchedules from schedules table grouped by day
                 $all = Schedule::where('kelas_id', $student->kelas_id)
