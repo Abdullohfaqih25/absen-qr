@@ -567,6 +567,10 @@
                         <i class="fas fa-chalkboard-teacher"></i>
                         <span>Guru</span>
                     </div>
+                    <div class="role-card" data-role="admin">
+                        <i class="fas fa-user-shield"></i>
+                        <span>Admin</span>
+                    </div>
                 </div>
                 <input type="hidden" id="selected_role" name="selected_role" value="siswa">
                 @endunless
@@ -669,6 +673,10 @@
                         emailInput.placeholder = 'Contoh: budisantoso@guru.absenqr.local';
                         if (demoGuru) demoGuru.style.display = 'flex';
                         if (demoSiswa) demoSiswa.style.display = 'none';
+                    } else if (role === 'admin') {
+                        emailInput.placeholder = 'Contoh: admin@sekolah.test';
+                        if (demoGuru) demoGuru.style.display = 'none';
+                        if (demoSiswa) demoSiswa.style.display = 'none';
                     } else {
                         emailInput.placeholder = 'Contoh: 2025{NIS}@student.absenqr.local';
                         if (demoGuru) demoGuru.style.display = 'none';
@@ -682,6 +690,16 @@
             const demoSiswa = document.querySelector('.demo-siswa');
             if (demoGuru) demoGuru.style.display = 'none';
             if (demoSiswa) demoSiswa.style.display = 'flex';
+            // If admin query param present, hide demos
+            if (location.search.includes('admin=1')) {
+                if (demoGuru) demoGuru.style.display = 'none';
+                if (demoSiswa) demoSiswa.style.display = 'none';
+                // mark admin card active
+                document.querySelectorAll('.role-card').forEach(c => c.classList.remove('active'));
+                const adminCard = document.querySelector('.role-card[data-role="admin"]');
+                if (adminCard) adminCard.classList.add('active');
+                const el = document.getElementById('selected_role'); if (el) el.value = 'admin';
+            }
         } else {
             // Admin mode: hide demo for siswa/guru
             const demoGuru = document.querySelector('.demo-guru');

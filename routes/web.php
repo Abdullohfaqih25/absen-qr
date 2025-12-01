@@ -34,7 +34,7 @@ Route::get('/admin', function(Request $request){
     if(auth()->check() && auth()->user()->isAdmin()){
         return redirect()->route('admin.dashboard');
     }
-    return view('auth.admin-login');
+    return redirect()->route('login', ['admin' => 1]);
 })->name('admin.login.public');
 
 // Auth Routes

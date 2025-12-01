@@ -29,12 +29,11 @@ class LoginController extends Controller
             $user = Auth::user();
 
             if ($user->isAdmin()) {
-                if ($selectedRole) {
-                    // Admin must login via /admin, reject attempts from the public selector form
+                // Allow admin login when selector is empty (direct admin form) or explicitly 'admin'
+                if ($selectedRole && $selectedRole !== 'admin') {
                     Auth::logout();
                     return back()->withErrors(['email' => 'Silakan masuk lewat /admin untuk akun administrator.'])->onlyInput('email');
                 }
-                // no selected role -> allow admin login (e.g., direct admin login form)
             } else {
                 if ($selectedRole) {
                     if ($selectedRole === 'guru' && ! $user->isGuru()) {
@@ -44,6 +43,10 @@ class LoginController extends Controller
                     if ($selectedRole === 'siswa' && ! $user->isSiswa()) {
                         Auth::logout();
                         return back()->withErrors(['email' => 'Akun ini bukan akun Siswa.'])->onlyInput('email');
+                    }
+                    if ($selectedRole === 'admin') {
+                        Auth::logout();
+                        return back()->withErrors(['email' => 'Akun ini bukan akun Administrator.'])->onlyInput('email');
                     }
                 }
             }
